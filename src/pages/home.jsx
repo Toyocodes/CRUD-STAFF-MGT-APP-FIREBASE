@@ -7,12 +7,16 @@ import {Link, useParams} from 'react-router-dom'
 import './Home.css'
 import Navbar from "../Components/Navbar/Navbar";
 import { toast } from 'react-toastify';
-
+// import { AuthContext } from "../context/AuthContext";
 
 const home = () => {
   const [data, setData] = useState([]);
 
-
+  // const { currentUser } = useContext(AuthContext);
+  // if (!currentUser) {
+  //   navigate("/");
+  //   return null; 
+  // }
 
   //to retrieve data from firebase and let it show on homw page
   useEffect(() => {
@@ -64,7 +68,8 @@ const home = () => {
   return (
     <div>
       <Navbar />
-      <div style={{ marginTop: '100px' }}>
+      <div style={{ marginTop: '50px' }}>
+        <h1 className='text-xl font-bold mb-20'>This is a Staff's contact management app where <br /> you can collate the names of your staffs</h1>
         <table className="styled-table">
           <thead>
             <tr>

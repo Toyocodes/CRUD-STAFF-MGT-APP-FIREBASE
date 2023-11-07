@@ -150,7 +150,7 @@ const AddEdit = () => {
   return (
     <div>
       <Navbar/>
-      <div className='mt-[100px] flex justify-center items-center gap-x-10'>
+      <div className='mt-[100px] flex flex-col md:flex-row justify-center items-center gap-x-10'>
        
         <div className='flex justify-center items-center'>
             <img
