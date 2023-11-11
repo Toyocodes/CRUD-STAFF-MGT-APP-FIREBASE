@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 
-const Navbar = () => {
+const Navbar = ({searchQuery, setSearchQuery, onSearchSubmit}) => {
   const [activeTab, setActiveTab] = useState("Home");
   
   const location = useLocation(); //to activate active page when I navigate
@@ -22,11 +22,17 @@ const Navbar = () => {
     }
   }, [location.pathname]);
 
-  const handleSubmit =(e)=>{
-    e.preventDefault();
-    navigate(`/search?name=${search}`)
-    setSearch("")
-  }
+  const handleInputChange = (e) => {
+    setSearch(e.target.value);
+    onSearchSubmit(e.target.value);
+  };
+
+  // const handleSubmit =(e)=>{
+  //   e.preventDefault();
+  //   onSearchSubmit(search);
+  //   // navigate(`/search?name=${search}`)
+  //   setSearch("")
+  // }
 
   return (
     <div className="header">
@@ -62,13 +68,20 @@ const Navbar = () => {
             </p>
           </Link> */}
         </div>
-        <form onSubmit={handleSubmit} >
+        <input
+          type="text"
+          placeholder="Search Name..."
+          className="inputField"
+          value={search}
+          onChange={handleInputChange}
+        />
+        {/* <form onSubmit={handleSubmit} >
           <input type='text' 
           placeholder='Search Name...'
           className='inputField'
           onChange={(e)=>setSearch(e.target.value)}
           value={search}/>
-        </form>
+        </form> */}
       </div>
     </div>
   );

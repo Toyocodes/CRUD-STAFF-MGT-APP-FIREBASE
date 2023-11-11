@@ -1,56 +1,45 @@
-import React, { useContext, useEffect, useState} from 'react'
-// import {dbRef, ref, onValue, get, child} from '../config/firebase';
-// import {db, ref, onValue, remove} from '../firebase';
-import { collection, getDocs, deleteDoc, doc, onSnapshot} from "firebase/firestore";
-import { db } from "../firebase"
-import {Link, useParams} from 'react-router-dom'
-import './Home.css'
-import Navbar from "../Components/Navbar/Navbar";
+import React, { useEffect, useState } from 'react';
+import { collection, getDocs, deleteDoc, doc, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { db } from '../firebase';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import './Home.css';
+import Navbar from '../Components/Navbar/Navbar';
 import { toast } from 'react-toastify';
-// import { AuthContext } from "../context/AuthContext";
 
-const home = () => {
+const Home = () => {
   const [data, setData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // const { currentUser } = useContext(AuthContext);
-  // if (!currentUser) {
-  //   navigate("/");
-  //   return null; 
-  // }
 
-  //to retrieve data from firebase and let it show on homw page
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+  };
+
   useEffect(() => {
-    // const fetchData = async () => {
-    //   let list = [];
-    //   try {
-    //     const querySnapshot = await getDocs(collection(db, 'staffs'));
-    //     querySnapshot.forEach((doc) => {
-    //       list.push({ id: doc.id, ...doc.data() });
-    //     });
-    //     setData(list);
-    //   } catch (err) {
-    //     console.log(err.message);
-    //   }
-    // };
-    // fetchData();
-    
-    // LISTEN (REALTIME)
-      const unsub = onSnapshot(collection(db, "staffs"),(snapShot) => {
-          let list = [];
-          snapShot.docs.forEach((doc) => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
-          setData(list);
-        },
-        (error) => {
-          console.log(error);
-        }
-      );
+    const unsub = onSnapshot(
+      query(
+        collection(db, 'staffs'),
+        where('name', '>=', searchQuery),
+        orderBy('name')
+      ),
+      (snapShot) => {
+        const regex = new RegExp(searchQuery, 'i');
+        let list = snapShot.docs
+          .filter((doc) => regex.test(doc.data().name))
+          .map((doc) => ({ id: doc.id, ...doc.data() }));
+        setData(list);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
 
-      return () => {
-        unsub();
-      };
-  }, []);
+    return () => {
+      unsub();
+    };
+  }, [searchQuery]);
+
+  
 
   const onDelete = async (id) => {
     if (window.confirm('Are you sure that you want to delete that contact?')) {
@@ -67,9 +56,18 @@ const home = () => {
 
   return (
     <div>
-      <Navbar />
+      <Navbar searchQuery={searchQuery} setSearchQuery={setSearchQuery} onSearchSubmit={handleSearch} />
       <div style={{ marginTop: '50px' }}>
-        <h1 className='text-xl font-bold mb-20'>This is a Staff's contact management app where <br /> you can collate the names of your staffs</h1>
+        <h1 className="text-xl font-bold mb-20">
+          This is a Staff's contact management app where you can collate the
+          names of your staffs
+        </h1>
+        {/* <input
+          type="text"
+          placeholder="Search by name"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        /> */}
         <table className="styled-table">
           <thead>
             <tr>
@@ -118,7 +116,4 @@ const home = () => {
   );
 };
 
-
-
-
-export default home
+export default Home;
